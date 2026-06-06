@@ -1,0 +1,567 @@
+Trade
+Product
+Instrument
+Party
+LegalEntity
+Account
+Book
+Portfolio
+Position
+Price
+Valuation
+RiskMeasure
+Cashflow
+Payment
+Currency
+Agreement
+Collateral
+MarginCall
+LifecycleEvent
+SettlementInstruction
+RegulatoryReport
+SourceSystem
+DataAttribute
+
+
+1. Trading & Securities Relationships
+Trade Relationships
+Trade -[EXECUTED_BY]-> Trader
+Trade -[BOOKED_TO]-> Book
+Trade -[BELONGS_TO]-> Portfolio
+Trade -[HAS_COUNTERPARTY]-> LegalEntity
+Trade -[CLEARED_BY]-> ClearingHouse
+Trade -[SETTLED_VIA]-> Custodian
+Trade -[REFERENCES]-> Instrument
+Trade -[GENERATES]-> Cashflow
+Trade -[HAS_RISK]-> RiskMeasure
+Example question
+
+“Which trades with Goldman Sachs generate USD cashflows settling tomorrow?”
+
+2. Counterparty & Client Relationships
+Party Hierarchy
+Client -[OWNS]-> Account
+LegalEntity -[PARENT_OF]-> Subsidiary
+Fund -[MANAGED_BY]-> AssetManager
+Counterparty -[HAS_LEI]-> LEI
+Counterparty -[DOMICILED_IN]-> Country
+Counterparty -[SUBJECT_TO]-> Regulation
+Example question
+
+“What total exposure exists to the parent group of Credit Suisse across all subsidiaries?”
+
+Very powerful for:
+
+exposure aggregation
+sanctions
+KYC
+stress testing
+3. Product & Instrument Relationships
+Securities Structure
+Bond -[ISSUED_BY]-> Issuer
+ETF -[HOLDS]-> Equity
+Swap -[REFERENCES]-> InterestRateIndex
+Option -[DERIVED_FROM]-> UnderlyingInstrument
+Future -[TRADES_ON]-> Exchange
+Security -[CLASSIFIED_AS]-> AssetClass
+Example question
+
+“Which portfolios indirectly hold Tesla through ETFs?”
+
+This is where graphs become extremely useful.
+
+4. Market Data Relationships
+Price -[FOR]-> Instrument
+YieldCurve -[BUILT_FROM]-> MarketQuote
+FXRate -[RELATES]-> CurrencyPair
+VolatilitySurface -[APPLIES_TO]-> Option
+MarketData -[PROVIDED_BY]-> Vendor
+Example question
+
+“Which NAV calculations used stale Bloomberg prices?”
+
+5. Risk Relationships
+Risk Propagation
+Portfolio -[HAS_RISK]-> VaR
+Trade -[CONTRIBUTES_TO]-> StressScenario
+RiskFactor -[AFFECTS]-> Instrument
+Position -[EXPOSED_TO]-> Currency
+Issuer -[AFFECTED_BY]-> CreditEvent
+Example question
+
+“Which trades are impacted if SOFR spikes 200bps?”
+
+Graphs are excellent for impact analysis.
+
+6. Payments & Settlement Relationships
+Cashflow -[SETTLES_IN]-> Currency
+SettlementInstruction -[USES]-> NostroAccount
+Payment -[SENT_TO]-> Beneficiary
+Transaction -[ROUTED_VIA]-> SWIFTMessage
+Settlement -[FAILED_DUE_TO]-> Exception
+Example question
+
+“Which failed settlements are tied to incorrect SSI instructions?”
+
+7. Fund Accounting / NAV Relationships
+
+Very relevant for BNY-like operations.
+
+NAV -[CALCULATED_FROM]-> Position
+Position -[VALUED_USING]-> Price
+Price -[SOURCED_FROM]-> Vendor
+Fund -[HOLDS]-> Security
+CorporateAction -[IMPACTS]-> Position
+FXRate -[CONVERTS]-> Currency
+Example question
+
+“Which vendor prices contributed to NAV exceptions today?”
+
+8. Collateral & Margin Relationships
+MarginCall -[ISSUED_TO]-> Counterparty
+Collateral -[SECURES]-> Exposure
+Collateral -[VALUED_BY]-> HaircutRule
+Agreement -[GOVERNS]-> MarginCall
+CSA -[DEFINES]-> Threshold
+Example question
+
+“Which counterparties are undercollateralized after market moves?”
+
+9. Regulatory & Compliance Relationships
+Trade -[REPORTED_TO]-> Regulator
+Transaction -[SUBJECT_TO]-> Regulation
+Client -[FLAGGED_BY]-> AMLAlert
+Account -[OWNED_BY]-> PoliticallyExposedPerson
+Entity -[SANCTIONED_BY]-> OFAC
+Example question
+
+“Which trades require EMIR reporting but failed submission?”
+
+10. Operational Lineage Relationships
+
+This is one of the most valuable enterprise uses.
+
+Attribute -[SOURCED_FROM]-> SourceSystem
+ReportField -[DERIVED_FROM]-> Attribute
+Dataset -[FEEDS]-> Dashboard
+Calculation -[USES]-> MarketData
+Model -[CONSUMES]-> Feature
+Example question
+
+“Which downstream reports are impacted if Bloomberg field PX_LAST is delayed?”
+
+11. AI/LLM-Specific Relationships
+
+For enterprise AI and RAG systems.
+
+Document -[MENTIONS]-> LegalEntity
+Policy -[GOVERNS]-> Process
+Prompt -[USES]-> DataProduct
+AIModel -[TRAINED_ON]-> Dataset
+KnowledgeChunk -[LINKED_TO]-> Regulation
+Example question
+
+“Which policies govern margin call processing for UK entities?”
+
+12. Temporal / Lifecycle Relationships
+
+Very important in finance.
+
+Trade -[AMENDED_BY]-> LifecycleEvent
+LifecycleEvent -[PRECEDES]-> Settlement
+Position -[VALID_ON]-> Date
+Agreement -[ACTIVE_DURING]-> TimePeriod
+Example question
+
+“Show all lifecycle events affecting this swap before termination.”
+
+Most Valuable Relationship Types in Real Banks
+
+In practice, the highest ROI relationships are usually:
+
+Relationship	Why Valuable
+Trade ↔ Counterparty	Exposure aggregation
+Trade ↔ Product	Risk & valuation
+Position ↔ Price	NAV & PnL
+Attribute ↔ Source System	Data lineage
+Report ↔ Data Element	Regulatory traceability
+Client ↔ Account ↔ Portfolio	Wealth & custody
+Security ↔ Issuer	Concentration risk
+Trade ↔ Cashflow	Liquidity
+Agreement ↔ Collateral	Margin optimization
+Risk Factor ↔ Position	Stress testing
+Important Principle
+
+A good financial knowledge graph is NOT:
+
+“all tables connected together”
+
+A good graph captures:
+
+business meaning
+causality
+dependency
+ownership
+lifecycle
+lineage
+regulatory accountability
+
+That is what makes it useful for:
+
+AI agents
+impact analysis
+operations
+risk
+compliance
+client intelligence
+data governance
+Give me a comprehensive list of entities and meaningful relationship in a knowledge graph for financial services
+
+For a financial-services knowledge graph, think of the graph as representing the entire operating model of a bank, asset manager, custodian, broker-dealer, or market infrastructure provider, not just securities and trades.
+
+The most useful architecture is:
+
+Business Entities
+    ↓
+Relationships
+    ↓
+Processes
+    ↓
+Data Assets
+    ↓
+Lineage & Governance
+1. Organization & Party Entities
+Party
+
+Represents any actor.
+
+Subtypes:
+
+Person
+Client
+Customer
+Employee
+Trader
+Portfolio Manager
+Broker
+Dealer
+Custodian
+Clearing Member
+Fund Manager
+Legal Entity
+Bank
+Corporation
+Hedge Fund
+Mutual Fund Company
+Pension Fund
+Insurance Company
+SPV
+Trust
+Organization Structure
+Division
+Department
+Desk
+Business Unit
+Relationships
+Person -[WORKS_FOR]-> Organization
+Trader -[EXECUTES_FOR]-> Desk
+LegalEntity -[OWNS]-> LegalEntity
+FundManager -[MANAGES]-> Fund
+Client -[OWNS]-> Account
+Client -[REPRESENTED_BY]-> RelationshipManager
+2. Client & Account Entities
+Client
+Account
+Portfolio
+Book
+Strategy
+Mandate
+Relationships
+Client -[OWNS]-> Account
+Account -[BELONGS_TO]-> Portfolio
+Portfolio -[CONTAINS]-> Position
+Portfolio -[FOLLOWS]-> Strategy
+Mandate -[GOVERNS]-> Portfolio
+Book -[BELONGS_TO]-> Desk
+3. Product & Instrument Entities
+Instrument
+
+Parent entity
+
+Subtypes:
+
+Equity
+Bond
+ETF
+Future
+Option
+Swap
+CDS
+FX Forward
+Repo
+Loan
+Mortgage
+Structured Product
+Product
+
+Business representation of instrument.
+
+Security Identifier
+ISIN
+CUSIP
+SEDOL
+FIGI
+RIC
+Ticker
+Relationships
+Instrument -[IDENTIFIED_BY]-> ISIN
+Instrument -[ISSUED_BY]-> Issuer
+Option -[DERIVED_FROM]-> Equity
+ETF -[HOLDS]-> Security
+Swap -[REFERENCES]-> Index
+Bond -[DENOMINATED_IN]-> Currency
+4. Issuer & Corporate Structure
+Issuer
+Parent Company
+Subsidiary
+Country
+Sector
+Industry
+Relationships
+Issuer -[PARENT_OF]-> Subsidiary
+Issuer -[DOMICILED_IN]-> Country
+Issuer -[BELONGS_TO]-> Sector
+Issuer -[BELONGS_TO]-> Industry
+Issuer -[LISTED_ON]-> Exchange
+5. Trading Entities
+Trade
+Order
+Allocation
+Execution
+Confirmation
+Lifecycle Event
+Relationships
+Order -[GENERATES]-> Trade
+Trade -[ALLOCATED_TO]-> Account
+Trade -[EXECUTED_BY]-> Trader
+Trade -[BOOKED_TO]-> Book
+Trade -[HAS_COUNTERPARTY]-> LegalEntity
+Trade -[RESULTS_IN]-> Position
+Trade -[HAS_EVENT]-> LifecycleEvent
+6. Position & Holdings
+Position
+Lot
+Holding
+Exposure
+Relationships
+Portfolio -[HOLDS]-> Position
+Position -[REFERENCES]-> Instrument
+Position -[CONTRIBUTES_TO]-> Exposure
+Position -[GENERATES]-> Cashflow
+7. Market Data Entities
+Price
+Quote
+Yield Curve
+Volatility Surface
+Index
+Benchmark
+Vendor
+Relationships
+Price -[FOR]-> Instrument
+Price -[PROVIDED_BY]-> Vendor
+YieldCurve -[BUILT_FROM]-> MarketQuote
+Benchmark -[COMPARED_AGAINST]-> Portfolio
+Index -[CONTAINS]-> Security
+8. Valuation Entities
+Valuation
+NAV
+PnL
+Pricing Model
+Valuation Adjustment
+XVA
+CVA
+FVA
+DVA
+Relationships
+Valuation -[VALUES]-> Position
+Valuation -[USES]-> Price
+NAV -[CALCULATED_FROM]-> Position
+PnL -[ATTRIBUTED_TO]-> Trade
+PricingModel -[VALUES]-> Instrument
+9. Risk Entities
+Risk Measure
+VaR
+Stress Test
+Scenario
+Risk Factor
+Limit
+Relationships
+RiskFactor -[AFFECTS]-> Instrument
+RiskFactor -[AFFECTS]-> Position
+Position -[EXPOSED_TO]-> RiskFactor
+Portfolio -[HAS_RISK]-> VaR
+Scenario -[IMPACTS]-> Portfolio
+Limit -[APPLIES_TO]-> Desk
+10. Cash & Payments
+Cashflow
+Payment
+Currency
+FX Rate
+Nostro Account
+SSI
+Relationships
+Trade -[GENERATES]-> Cashflow
+Cashflow -[SETTLES_IN]-> Currency
+Payment -[USES]-> SSI
+Payment -[ROUTED_VIA]-> NostroAccount
+FXRate -[CONVERTS]-> CurrencyPair
+11. Settlement & Clearing
+Settlement
+Clearing House
+CCP
+Custodian
+Depository
+Relationships
+Trade -[CLEARED_BY]-> CCP
+Trade -[SETTLED_BY]-> Custodian
+Settlement -[USES]-> SettlementInstruction
+Security -[HELD_AT]-> Depository
+12. Collateral & Margin
+Collateral
+Margin Call
+CSA
+Haircut
+Exposure
+Relationships
+Collateral -[SECURES]-> Exposure
+MarginCall -[ISSUED_TO]-> Counterparty
+CSA -[GOVERNS]-> MarginCall
+Haircut -[APPLIES_TO]-> Collateral
+13. Corporate Actions
+Corporate Action
+
+Subtypes:
+
+Dividend
+Split
+Merger
+Spin-off
+Rights Issue
+Tender Offer
+Relationships
+CorporateAction -[AFFECTS]-> Security
+CorporateAction -[AFFECTS]-> Position
+Dividend -[PAID_BY]-> Issuer
+Merger -[INVOLVES]-> Issuer
+14. Legal & Agreement Entities
+Agreement
+ISDA
+CSA
+Prospectus
+Contract
+Relationships
+Agreement -[GOVERNS]-> Trade
+Agreement -[SIGNED_BY]-> Party
+CSA -[ATTACHED_TO]-> ISDA
+15. Regulatory Entities
+Regulation
+Regulator
+Report
+Filing
+Obligation
+Relationships
+Trade -[REPORTED_TO]-> Regulator
+Trade -[SUBJECT_TO]-> Regulation
+Report -[SUBMITTED_TO]-> Regulator
+Client -[SCREENED_AGAINST]-> SanctionsList
+16. AML / KYC
+KYC Profile
+Sanctions List
+Alert
+Investigation
+Beneficial Owner
+Relationships
+Client -[HAS_KYC]-> Profile
+Client -[HAS_BENEFICIAL_OWNER]-> Person
+Alert -[RAISED_FOR]-> Transaction
+Client -[MATCHES]-> SanctionsList
+17. Data Governance Entities
+Data Product
+Dataset
+Data Element
+Attribute
+Business Term
+Data Quality Rule
+Data Owner
+Relationships
+Dataset -[CONTAINS]-> Attribute
+BusinessTerm -[DEFINED_BY]-> Steward
+Attribute -[IMPLEMENTS]-> BusinessTerm
+DataQualityRule -[VALIDATES]-> Attribute
+DataOwner -[OWNS]-> Dataset
+18. Lineage Entities
+Source System
+Application
+ETL Job
+API
+Report Field
+Dashboard
+Relationships
+Attribute -[SOURCED_FROM]-> SourceSystem
+Dataset -[GENERATED_BY]-> ETLJob
+ReportField -[DERIVED_FROM]-> Attribute
+Dashboard -[CONSUMES]-> Dataset
+Application -[PRODUCES]-> Dataset
+19. AI & Analytics Entities
+Model
+Feature
+Prompt
+Agent
+Knowledge Asset
+Training Dataset
+Relationships
+Model -[TRAINED_ON]-> Dataset
+Feature -[DERIVED_FROM]-> Attribute
+Agent -[USES]-> KnowledgeAsset
+Prompt -[REFERENCES]-> BusinessTerm
+Model -[PREDICTS]-> Outcome
+20. Temporal Entities (Critical but Often Missing)
+Business Date
+Effective Date
+Version
+Event
+Snapshot
+Relationships
+Trade -[VALID_ON]-> BusinessDate
+Position -[SNAPSHOT_AT]-> Time
+Version -[SUPERSEDES]-> Version
+LifecycleEvent -[PRECEDES]-> LifecycleEvent
+The highest-value relationship categories in real banks
+
+If you are building a KG for RBC, BNY, JPMorgan, Goldman Sachs, or State Street, roughly 80% of business value comes from these relationship families:
+
+Trade ↔ Counterparty
+Trade ↔ Product
+Trade ↔ Position
+Position ↔ Price
+Position ↔ Risk Factor
+Portfolio ↔ Holdings
+Security ↔ Issuer
+Issuer ↔ Corporate Hierarchy
+Trade ↔ Agreement
+Trade ↔ Regulatory Obligation
+Attribute ↔ Business Term
+Attribute ↔ Source System
+Report Field ↔ Data Element
+Dataset ↔ Downstream Consumer
+
+These relationships enable the most valuable questions:
+
+What exposures do we have to a corporate group?
+Which reports are impacted by a bad security price?
+Which trades are affected by a corporate action?
+Which positions contribute most to VaR?
+Which downstream systems use this attribute?
+Which regulations apply to this transaction?
+Which data elements are required to calculate NAV, ABOR, or IBOR?
+What business processes will break if a vendor feed fails?
